@@ -6,7 +6,8 @@ from datetime import datetime
 app = Flask(__name__)
 
 # Conecxión a la base de datos
-app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:crisda24@localhost/car_microservice'
+# app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://root:crisda24@localhost/car_microservice'
+app.config['SQLALCHEMY_DATABASE_URI']='mysql+pymysql://8Cts6WhfWM:DE4OD0L54R@remotemysql.com/8Cts6WhfWM'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 db = SQLAlchemy(app) # Interactura con la base de datos
