@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from datetime import datetime
+from uuid import uuid4
+from sqlalchemy_mysql_binary_uuid import BinaryUUID
 
 app = Flask(__name__)
 
@@ -15,15 +17,16 @@ ma = Marshmallow(app) # Crear esquema
 
 
 class Cars(db.Model):
-    id= db.Column(db.Integer, primary_key=True)
+    #id= db.Column(db.Integer, primary_key=True)
+    id = db.Column('id', BinaryUUID, primary_key=True, default=uuid4)
     marca= db.Column(db.String(70))
     modelo= db.Column(db.String(70))
     anio= db.Column(db.Integer)
-    puertas= db.Column(db.String(70))
+    puertas= db.Column(db.Integer)
     color= db.Column(db.String(70))
     transmision= db.Column(db.String(70))
     existencia= db.Column(db.Integer)
-    precio= db.Column(db.Integer)
+    precio= db.Column(db.Float)
     creado= db.Column(db.DateTime, index=True, default=datetime.now)
     
     def __init__(self,marca, modelo, anio, puertas, color, transmision, existencia, precio):
@@ -45,7 +48,7 @@ class CarSchema(ma.Schema):
 car_schema = CarSchema()
 cars_schema = CarSchema(many=True)
 
-@app.route('/cars', methods=['POST'])       
+@app.route('/api/v1/cars', methods=['POST'])       
 def createCar():
     marca      = request.json['marca']
     modelo      = request.json['modelo']
@@ -62,18 +65,18 @@ def createCar():
     
     return car_schema.jsonify(new_car)
 
-@app.route('/cars', methods=['GET'])
+@app.route('/api/v1/cars', methods=['GET'])
 def get_cars():
     all_cars=Cars.query.all()
     result = cars_schema.dump(all_cars)
     return jsonify(result)
 
-@app.route('/cars/<id>', methods=['GET'])
+@app.route('/api/v1/cars/<id>', methods=['GET'])
 def get_car(id):
     car = Cars.query.get(id)
     return car_schema.jsonify(car)
 
-@app.route('/cars/<id>', methods=['PUT'])
+@app.route('/api/v1/cars/<id>', methods=['PUT'])
 def update_car(id):
     car=Cars.query.get(id)
     marca       = request.json['marca']
@@ -97,7 +100,7 @@ def update_car(id):
     db.session.commit()
     return car_schema.jsonify(car)
 
-@app.route('/cars/<id>', methods=['DELETE'])
+@app.route('/api/v1/cars/<id>', methods=['DELETE'])
 def delete_car(id):
     car =  Cars.query.get(id)
     db.session.delete(car)
